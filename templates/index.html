@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Your ML Model</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
+        input, button { margin-top: 10px; padding: 10px; width: 100%; }
+        img { max-width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Train Your Own ML Model</h2>
+        
+        <h3>Upload Image for Training</h3>
+        <input type="file" id="imageInput">
+        <input type="text" id="labelInput" placeholder="Enter label">
+        <button onclick="uploadImage()">Upload & Label</button>
+
+        <h3>Train Model</h3>
+        <button onclick="trainModel()">Train Model</button>
+
+        <h3>Predict Image</h3>
+        <input type="file" id="predictInput">
+        <button onclick="predictImage()">Predict</button>
+        <h4 id="predictionResult"></h4>
+
+        <h3>Uploaded Image</h3>
+        <img id="previewImage" src="" alt="No Image Selected">
+    </div>
+
+    <script>
+        function uploadImage() {
+            let file = document.getElementById("imageInput").files[0];
+            let label = document.getElementById("labelInput").value;
+            let formData = new FormData();
+            formData.append("file", file);
+            formData.append("label", label);
+
+            fetch("/upload", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => alert("Error: " + error));
+        }
+
+        function trainModel() {
+            fetch("/train", { method: "POST" })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => alert("Error: " + error));
+        }
+
+        function predictImage() {
+            let file = document.getElementById("predictInput").files[0];
+            let formData = new FormData();
+            formData.append("file", file);
+
+            fetch("/predict", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => document.getElementById("predictionResult").innerText = "Prediction: " + data.prediction)
+                .catch(error => alert("Error: " + error));
+        }
+    </script>
+</body>
+</html>
